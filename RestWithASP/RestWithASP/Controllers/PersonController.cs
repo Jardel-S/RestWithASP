@@ -1,108 +1,55 @@
 using Microsoft.AspNetCore.Mvc;
+using RestWithASP.Model;
+using RestWithASP.Services;
 
 namespace RestWithASP.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class CalculatorController : ControllerBase
+[Route("api/[controller]")]
+public class PersonController : ControllerBase
 {
     
-    private readonly ILogger<CalculatorController> _logger;
+    private readonly ILogger<PersonController> _logger;
+    private IPersonService _personSevice;
 
-    public CalculatorController(ILogger<CalculatorController> logger)
+    public PersonController(ILogger<PersonController> logger, IPersonService personService)
     {
         _logger = logger;
+        _personSevice= personService;
     }
 
-    [HttpGet("sum/{firstNumber}/{secondNumber}")]
-    public IActionResult Sum(string firstNumber, string secondNumber)
+    [HttpGet]
+    public IActionResult Get()
     {
-        if(IsNumeric(firstNumber) && IsNumeric(secondNumber))
-        {
-            var sum = ConvertToDecimal(firstNumber) + ConvertToDecimal(secondNumber);
-            return Ok(sum.ToString());
-        }
-
-        return BadRequest("Invalid Input");
+        return Ok(_personSevice.FindAll());
     }
 
-    [HttpGet("sub/{firstNumber}/{secondNumber}")]
-    public IActionResult Sub(string firstNumber, string secondNumber)
+    [HttpGet("{id}")]
+    public IActionResult Get(long id)
     {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
-        {
-            var sub = ConvertToDecimal(firstNumber) - ConvertToDecimal(secondNumber);
-            return Ok(sub.ToString());
-        }
-
-        return BadRequest("Inavlid Input");
+        var person = _personSevice.FindById(id);
+        if (person == null) return NotFound();
+        return Ok(person);
+    }
+    
+    [HttpPost]
+    public IActionResult Post([FromBody] Person person)
+    {
+        if (person == null) return BadRequest();
+        return Ok(_personSevice.Create(person));
     }
 
-    [HttpGet("mul/{firstNumber}/{secondNumber}")]
-    public IActionResult Mul(string firstNumber, string secondNumber)
+    [HttpPut]
+    public IActionResult Put([FromBody] Person person)
     {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
-        {
-            var mul = ConvertToDecimal(firstNumber) * ConvertToDecimal(secondNumber);
-            return Ok(mul.ToString());
-        }
-
-        return BadRequest("Inavlid Input");
+        if (person == null) return BadRequest();
+        return Ok(_personSevice.Create(person));
     }
 
-    [HttpGet("div/{firstNumber}/{secondNumber}")]
-    public IActionResult Div(string firstNumber, string secondNumber)
+    [HttpDelete("{id}")]
+    public IActionResult Delete(long id)
     {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
-        {
-            var div = ConvertToDecimal(firstNumber) / ConvertToDecimal(secondNumber);
-            return Ok(div.ToString());
-        }
-
-        return BadRequest("Inavlid Input");
-    }
-
-    [HttpGet("media/{firstNumber}/{secondNumber}")]
-    public IActionResult Media(string firstNumber, string secondNumber)
-    {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
-        {
-            var media = (ConvertToDecimal(firstNumber) + ConvertToDecimal(secondNumber)) / 2;
-            return Ok(media.ToString());
-        }
-
-        return BadRequest("Inavlid Input");
-    }
-
-    [HttpGet("square/{Number}")]
-    public IActionResult Square(string Number)
-    {
-        if (IsNumeric(Number))
-        {
-            var square = Math.Sqrt((double)ConvertToDecimal(Number));
-            return Ok(square.ToString());
-        }
-
-        return BadRequest("Inavlid Input");
-    }
-
-    private decimal ConvertToDecimal(string strNumber)
-    {
-        decimal decimalValue;
-        if(decimal.TryParse(strNumber, out decimalValue))
-        {
-            return decimalValue;
-        }
-        return 0;
-    }
-
-    private bool IsNumeric(string strNumber)
-    {
-        double number;
-        bool isNumber = double.TryParse(
-            strNumber, System.Globalization.NumberStyles.Any, 
-            System.Globalization.NumberFormatInfo.InvariantInfo, 
-            out number);
-        return isNumber;
+        _personSevice.Delete(id);
+        return NoContent();
     }
 }
