@@ -43,7 +43,7 @@ public class PersonController : ControllerBase
     public IActionResult Put([FromBody] Person person)
     {
         if (person == null) return BadRequest();
-        return Ok(_personSevice.Create(person));
+        return Ok(_personSevice.Update(person));
     }
 
     [HttpDelete("{id}")]

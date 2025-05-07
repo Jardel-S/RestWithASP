@@ -1,23 +1,37 @@
+using RestWithASP.Model.Context;
 using RestWithASP.Services;
 using RestWithASP.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace RestWithASP
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+            // Add services to the container.
 
-builder.Services.AddControllers();
+            builder.Services.AddControllers();
 
-//Dependency Injection
-builder.Services.AddScoped<IPersonService, PersonServiceImplementation>();
+            var connection = builder.Configuration["SQLServerConnection:SQLServerConnectionString"];
+            builder.Services.AddDbContext<SQLServerContext>(options => options.UseSqlServer(connection));
 
-var app = builder.Build();
+            //Dependency Injection
+            builder.Services.AddScoped<IPersonService, PersonServiceImplementation>();
 
-// Configure the HTTP request pipeline.
+            var app = builder.Build();
 
-app.UseHttpsRedirection();
+            // Configure the HTTP request pipeline.
 
-app.UseAuthorization();
+            app.UseHttpsRedirection();
 
-app.MapControllers();
+            app.UseAuthorization();
 
-app.Run();
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
+}
