@@ -18,6 +18,9 @@ namespace RestWithASP
             var connection = builder.Configuration["SQLServerConnection:SQLServerConnectionString"];
             builder.Services.AddDbContext<SQLServerContext>(options => options.UseSqlServer(connection));
 
+            //Vertioning API
+            builder.Services.AddApiVersioning();
+
             //Dependency Injection
             builder.Services.AddScoped<IPersonService, PersonServiceImplementation>();
 
