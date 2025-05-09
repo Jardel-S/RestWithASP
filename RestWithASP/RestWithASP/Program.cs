@@ -1,7 +1,9 @@
 using RestWithASP.Model.Context;
-using RestWithASP.Services;
-using RestWithASP.Services.Implementations;
+using RestWithASP.Business;
+using RestWithASP.Business.Implementations;
 using Microsoft.EntityFrameworkCore;
+using RestWithASP.Repository;
+using RestWithASP.Repository.Implementations;
 
 namespace RestWithASP
 {
@@ -22,7 +24,8 @@ namespace RestWithASP
             builder.Services.AddApiVersioning();
 
             //Dependency Injection
-            builder.Services.AddScoped<IPersonService, PersonServiceImplementation>();
+            builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
+            builder.Services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
 
             var app = builder.Build();
 

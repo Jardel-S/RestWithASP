@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RestWithASP.Model;
-using RestWithASP.Services;
+using RestWithASP.Business;
 
 namespace RestWithASP.Controllers;
 
@@ -12,24 +12,24 @@ public class PersonController : ControllerBase
 {
     
     private readonly ILogger<PersonController> _logger;
-    private IPersonService _personSevice;
+    private IPersonBusiness _personBusiness;
 
-    public PersonController(ILogger<PersonController> logger, IPersonService personService)
+    public PersonController(ILogger<PersonController> logger, IPersonBusiness personBusiness)
     {
         _logger = logger;
-        _personSevice= personService;
+        _personBusiness= personBusiness;
     }
 
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_personSevice.FindAll());
+        return Ok(_personBusiness.FindAll());
     }
 
     [HttpGet("{id}")]
     public IActionResult Get(long id)
     {
-        var person = _personSevice.FindById(id);
+        var person = _personBusiness.FindById(id);
         if (person == null) return NotFound();
         return Ok(person);
     }
@@ -38,20 +38,20 @@ public class PersonController : ControllerBase
     public IActionResult Post([FromBody] Person person)
     {
         if (person == null) return BadRequest();
-        return Ok(_personSevice.Create(person));
+        return Ok(_personBusiness.Create(person));
     }
 
     [HttpPut]
     public IActionResult Put([FromBody] Person person)
     {
         if (person == null) return BadRequest();
-        return Ok(_personSevice.Update(person));
+        return Ok(_personBusiness.Update(person));
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
-        _personSevice.Delete(id);
+        _personBusiness.Delete(id);
         return NoContent();
     }
 }
