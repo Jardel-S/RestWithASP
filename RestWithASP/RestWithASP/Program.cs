@@ -3,10 +3,10 @@ using RestWithASP.Business;
 using RestWithASP.Business.Implementations;
 using Microsoft.EntityFrameworkCore;
 using RestWithASP.Repository;
-using RestWithASP.Repository.Implementations;
 using Serilog;
 using EvolveDb;
 using Microsoft.Data.SqlClient;
+using RestWithASP.Repository.Generic;
 
 namespace RestWithASP
 {
@@ -33,9 +33,8 @@ namespace RestWithASP
 
             //Dependency Injection
             builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
-            builder.Services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
             builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
-            builder.Services.AddScoped<IBookRepository, BookRepositoryImplementation>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
             var app = builder.Build();
 

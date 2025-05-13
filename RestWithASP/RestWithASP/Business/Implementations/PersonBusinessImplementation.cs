@@ -8,9 +8,9 @@ namespace RestWithASP.Business.Implementations
 {
     public class PersonBusinessImplementation : IPersonBusiness
     {
-        private readonly IPersonRepository _respository;
+        private readonly IRepository<Person> _respository;
 
-        public PersonBusinessImplementation(IPersonRepository repository)
+        public PersonBusinessImplementation(IRepository<Person> repository)
         {
             _respository = repository;
         }
