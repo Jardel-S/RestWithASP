@@ -1,6 +1,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using RestWithASP.Model;
+using RestWithASP.Data.VO;
 using RestWithASP.Business;
 
 namespace RestWithASP.Controllers;
@@ -35,14 +35,14 @@ public class PersonController : ControllerBase
     }
     
     [HttpPost]
-    public IActionResult Post([FromBody] Person person)
+    public IActionResult Post([FromBody] PersonVO person)
     {
         if (person == null) return BadRequest();
         return Ok(_personBusiness.Create(person));
     }
 
     [HttpPut]
-    public IActionResult Put([FromBody] Person person)
+    public IActionResult Put([FromBody] PersonVO person)
     {
         if (person == null) return BadRequest();
         return Ok(_personBusiness.Update(person));

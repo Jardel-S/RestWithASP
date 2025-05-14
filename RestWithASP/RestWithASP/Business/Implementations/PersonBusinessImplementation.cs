@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+﻿using RestWithASP.Data.Converter.Implementation;
+using RestWithASP.Data.VO;
 using RestWithASP.Model;
-using RestWithASP.Model.Context;
 using RestWithASP.Repository;
-using System;
 
 namespace RestWithASP.Business.Implementations
 {
@@ -10,39 +9,41 @@ namespace RestWithASP.Business.Implementations
     {
         private readonly IRepository<Person> _respository;
 
+        private readonly PersonConverter _converter;
+
         public PersonBusinessImplementation(IRepository<Person> repository)
         {
             _respository = repository;
+            _converter = new PersonConverter();
         }
 
-        public List<Person> FindAll()
+        public List<PersonVO> FindAll()
         {
-            return _respository.FindAll();
+            return _converter.Parse(_respository.FindAll());
         }
 
-        public Person FindById(long id)
+        public PersonVO FindById(long id)
         {
-            return _respository.FindById(id);
+            return _converter.Parse(_respository.FindById(id));
         }
 
-        public Person Create(Person person)
+        public PersonVO Create(PersonVO person)
         {
-            return _respository.Create(person);
+            var personEntity = _converter.Parse(person);
+            personEntity = _respository.Create(personEntity);
+            return _converter.Parse(personEntity);
         }
 
-        public Person Update(Person person)
+        public PersonVO Update(PersonVO person)
         {
-           return Update(person);
+            var personEntity = _converter.Parse(person);
+            personEntity = _respository.Update(personEntity);
+            return _converter.Parse(personEntity);
         }
 
         public void Delete(long id)
         {
             _respository.Delete(id);
-        }
-
-        private bool Exists(long id)
-        {
-            return _respository.Exists(id);
         }
     }
 }
