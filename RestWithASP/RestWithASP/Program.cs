@@ -7,6 +7,7 @@ using Serilog;
 using EvolveDb;
 using Microsoft.Data.SqlClient;
 using RestWithASP.Repository.Generic;
+using Microsoft.Net.Http.Headers;
 
 namespace RestWithASP
 {
@@ -27,6 +28,15 @@ namespace RestWithASP
             {
                 MigrateDatabase(connection);
             }
+
+            builder.Services.AddMvc(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+
+                options.FormatterMappings.SetMediaTypeMappingForFormat("xml", MediaTypeHeaderValue.Parse("application/xml"));
+                options.FormatterMappings.SetMediaTypeMappingForFormat("json", MediaTypeHeaderValue.Parse("application/json"));
+            })
+            .AddXmlSerializerFormatters();
 
             //Vertioning API
             builder.Services.AddApiVersioning();
