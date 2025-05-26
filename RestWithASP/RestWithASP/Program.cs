@@ -8,6 +8,8 @@ using EvolveDb;
 using Microsoft.Data.SqlClient;
 using RestWithASP.Repository.Generic;
 using Microsoft.Net.Http.Headers;
+using RestWithASP.Hypermedia.Filters;
+using RestWithASP.Hypermedia.Enricher;
 
 namespace RestWithASP
 {
@@ -38,6 +40,13 @@ namespace RestWithASP
             })
             .AddXmlSerializerFormatters();
 
+            //Config HETEAOAS
+            var filterOptions = new HyperMediaFilterOptions();
+            filterOptions.ContentResponseEnricherList.Add(new PersonEnricher());
+            filterOptions.ContentResponseEnricherList.Add(new BookEnricher());
+
+            builder.Services.AddSingleton(filterOptions);
+
             //Vertioning API
             builder.Services.AddApiVersioning();
 
@@ -53,6 +62,8 @@ namespace RestWithASP
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapControllerRoute("DefaultApi", "{controller=values}/v{version=apiVersion}/{id?}");
 
             app.MapControllers();
 

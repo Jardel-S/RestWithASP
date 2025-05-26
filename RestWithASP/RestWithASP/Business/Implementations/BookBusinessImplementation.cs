@@ -35,7 +35,7 @@ namespace RestWithASP.Business.Implementations
         {
             var bookEntity = _converter.Parse(book);
             bookEntity = _repository.Create(bookEntity);
-            return _converter.Parse(_repository.Create(bookEntity));
+            return _converter.Parse(bookEntity);
         }
 
         // Method responsible for updating one book
@@ -43,7 +43,7 @@ namespace RestWithASP.Business.Implementations
         {
             var bookEntity = _converter.Parse(book);
             bookEntity = _repository.Update(bookEntity);
-            return _converter.Parse(_repository.Create(bookEntity));
+            return _converter.Parse(bookEntity);
         }
 
         // Method responsible for deleting a book from an ID
