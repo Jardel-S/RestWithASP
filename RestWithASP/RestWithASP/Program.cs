@@ -10,6 +10,8 @@ using RestWithASP.Repository.Generic;
 using Microsoft.Net.Http.Headers;
 using RestWithASP.Hypermedia.Filters;
 using RestWithASP.Hypermedia.Enricher;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace RestWithASP
 {
@@ -18,10 +20,33 @@ namespace RestWithASP
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var appName  = "REST API's RESTful From 0 to Azure with ASP.NET Core 8 and Docker";
+            var appVersion  = "v1";
+            var appDescription  = $"REST API RESTful developed in course '{appName}'";
+
+            builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            //Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(appVersion,
+                    new OpenApiInfo
+                    {
+                        Title = appName,
+                        Version = appVersion,
+                        Description = appDescription,
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Jardel Moreno",
+                            Url = new Uri("https://github.com/Jardel-S")
+                        }
+                    });
+            });
 
             var connection = builder.Configuration["SQLServerConnection:SQLServerConnectionString"];
             builder.Services.AddDbContext<SQLServerContext>(options => options.UseSqlServer(connection));
@@ -60,6 +85,17 @@ namespace RestWithASP
             // Configure the HTTP request pipeline.
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{appName} - {appVersion}");
+            });
+
+            var option = new RewriteOptions();
+            option.AddRedirect("^$", "swagger");
+            app.UseRewriter(option);
 
             app.UseAuthorization();
 
