@@ -28,6 +28,13 @@ namespace RestWithASP
 
             // Add services to the container.
 
+            builder.Services.AddCors(options => options.AddDefaultPolicy(builder =>
+            {
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }));
+
             builder.Services.AddControllers();
 
             //Swagger
@@ -85,6 +92,8 @@ namespace RestWithASP
             // Configure the HTTP request pipeline.
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseSwagger();
 
