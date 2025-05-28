@@ -12,6 +12,14 @@ using RestWithASP.Hypermedia.Filters;
 using RestWithASP.Hypermedia.Enricher;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Rewrite;
+using RestWithASP.Services;
+using RestWithASP.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using RestWithASP.Services.Implementations;
 
 namespace RestWithASP
 {
@@ -25,6 +33,41 @@ namespace RestWithASP
             var appDescription  = $"REST API RESTful developed in course '{appName}'";
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+            var tokenConfigurations = new TokenConfiguration();
+
+            new ConfigureFromConfigurationOptions<TokenConfiguration>(
+                   builder.Configuration.GetSection("TokenConfigurations")
+            )
+            .Configure(tokenConfigurations);
+
+            builder.Services.AddSingleton(tokenConfigurations);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = tokenConfigurations.Issuer,
+                    ValidAudience = tokenConfigurations.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenConfigurations.Secret))
+                };
+            });
+
+            builder.Services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
 
             // Add services to the container.
 
@@ -85,7 +128,12 @@ namespace RestWithASP
             //Dependency Injection
             builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
             builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
+            builder.Services.AddScoped<ILoginBusiness, LoginBusinessImplementation>();
+
+            builder.Services.AddTransient<ITokenService, TokenService>();
+
             builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 
