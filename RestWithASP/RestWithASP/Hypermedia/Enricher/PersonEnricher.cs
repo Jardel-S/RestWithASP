@@ -29,6 +29,13 @@ namespace RestWithASP.Hypermedia.Enricher
             });
             content.Links.Add(new HyperMediaLink()
             {
+                Action = HttpActionVerb.PATCH,
+                Href = link,
+                Rel = RelationType.self,
+                Type = ResponseTypeFormat.DefaultPatch
+            });
+            content.Links.Add(new HyperMediaLink()
+            {
                 Action = HttpActionVerb.PUT,
                 Href = link,
                 Rel = RelationType.self,

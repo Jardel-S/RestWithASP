@@ -6,7 +6,7 @@ namespace RestWithASP.Repository.Generic
 {
     public class GenericRepository<T> : IRepository<T> where T : BaseEntity
     {
-        private SQLServerContext _context;
+        protected SQLServerContext _context;
         private DbSet<T> dataset;
 
         public GenericRepository(SQLServerContext context)
