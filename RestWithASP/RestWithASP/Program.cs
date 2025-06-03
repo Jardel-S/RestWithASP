@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RestWithASP.Services.Implementations;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace RestWithASP
 {
@@ -126,6 +127,9 @@ namespace RestWithASP
             builder.Services.AddApiVersioning();
 
             //Dependency Injection
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped<IFileBusiness, FileBusinessImplementation>();
+
             builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
             builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
             builder.Services.AddScoped<ILoginBusiness, LoginBusinessImplementation>();
@@ -163,7 +167,7 @@ namespace RestWithASP
 
             app.Run();
 
-            void MigrateDatabase(string connection)
+            void MigrateDatabase(string? connection)
             {
                 try
                 {
